@@ -19,7 +19,7 @@ class CarApp(DashboardApp):
 
         self.entity_topic_map = {
             "sensor.garage_id_7_accuniveau": "battery",
-            "sensor.evcc_laadpaal_charge_power": "chargingPower",
+            "sensor.alfen_laadpaal_eneco_real_power_sum": "chargingPower",
             "sensor.garage_id_7_elektrisch_bereik": "cruisingRange",
             "sensor.evcc_laadpaal_vehicle_limit_soc": "targetCharge",
         }
