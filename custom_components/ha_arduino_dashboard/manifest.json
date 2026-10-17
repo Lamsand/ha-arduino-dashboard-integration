@@ -1,5 +1,5 @@
 {
-  "domain": "ha-arduino-dashboard",
+  "domain": "ha_arduino_dashboard",
   "name": "HA Arduino Dashboard",
   "codeowners": [],
   "config_flow": true,

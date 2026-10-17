@@ -1,3 +1,3 @@
 """Constants for the HA Arduino Dashboard integration."""
 
-DOMAIN = "ha-arduino-dashboard"
+DOMAIN = "ha_arduino_dashboard"
