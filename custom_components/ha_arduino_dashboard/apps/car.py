@@ -9,22 +9,21 @@ _LOGGER = logging.getLogger(__name__)
 class CarApp(DashboardApp):
     """Car App pushing Home Assistant states to Arduino via MQTT."""
 
-    def __init__(self, hass):
-        super().__init__(hass, app_id="car", name="Arduino Car Dashboard")
+    def __init__(self, hass, entry_id: str):
+        super().__init__(hass, entry_id=entry_id, app_id="car", name="Arduino Car Dashboard")
 
     async def async_setup(self):
-        """Set up HA state tracking for the Car app."""
+        """Set up device registration and HA state tracking for the Car app."""
+        await super().async_setup()  # Registreert het apparaat in HA
         _LOGGER.info("Setting up Car App...")
 
-        # Mapping van HA entiteiten naar de gewenste MQTT topics
         self.entity_topic_map = {
-            "sensor.car_battery_level": "battery",
-            "sensor.car_charging_power": "charginPower",
-            "sensor.car_cruising_range": "cruisingRange",
-            "number.car_target_charge": "targetCharge",
+            "sensor.garage_id_7_accuniveau": "battery",
+            "sensor.evcc_laadpaal_charge_power": "chargingPower",
+            "sensor.garage_id_7_elektrisch_bereik": "cruisingRange",
+            "number.evcc_laadpaal_vehicle_limit_soc": "targetCharge",
         }
 
-        # Gebruik de geïmporteerde event helper in plaats van self.hass.states
         async_track_state_change_event(
             self.hass,
             list(self.entity_topic_map.keys()),
@@ -32,7 +31,7 @@ class CarApp(DashboardApp):
         )
 
     async def _async_on_ha_state_change(self, event):
-        """Send updated state to Arduino over MQTT when tracked entity changes."""
+        """Send updated state to Arduino over MQTT (retained)."""
         entity_id = event.data.get("entity_id")
         new_state = event.data.get("new_state")
 
@@ -41,9 +40,10 @@ class CarApp(DashboardApp):
 
         subtopic = self.entity_topic_map.get(entity_id)
         if subtopic:
-            await self.publish_data(subtopic, str(new_state.state))
+            # retain=True zorgt dat het bericht op de MQTT broker bewaard blijft
+            await self.publish_data(subtopic, str(new_state.state), retain=True)
             _LOGGER.debug(
-                "Pushed %s state (%s) to MQTT topic car/%s",
+                "Pushed %s state (%s) to MQTT topic car/%s (retained)",
                 entity_id,
                 new_state.state,
                 subtopic,

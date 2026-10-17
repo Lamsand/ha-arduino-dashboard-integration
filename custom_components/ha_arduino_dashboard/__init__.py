@@ -8,7 +8,6 @@ from .apps.car import CarApp
 
 _LOGGER = logging.getLogger(__name__)
 
-# List of active dashboard apps
 APPS = [
     CarApp,
 ]
@@ -19,9 +18,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     loaded_apps = []
 
-    # Instantiate and set up each registered app
     for app_cls in APPS:
-        app_instance = app_cls(hass)
+        # Geef entry.entry_id mee bij het aanmaken van de app
+        app_instance = app_cls(hass, entry.entry_id)
         await app_instance.async_setup()
         loaded_apps.append(app_instance)
 
