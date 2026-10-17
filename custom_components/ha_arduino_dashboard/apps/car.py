@@ -21,7 +21,7 @@ class CarApp(DashboardApp):
             "sensor.garage_id_7_accuniveau": "battery",
             "sensor.evcc_laadpaal_charge_power": "chargingPower",
             "sensor.garage_id_7_elektrisch_bereik": "cruisingRange",
-            "number.evcc_laadpaal_vehicle_limit_soc": "targetCharge",
+            "sensor.evcc_laadpaal_vehicle_limit_soc": "targetCharge",
         }
 
         async_track_state_change_event(
