@@ -46,5 +46,5 @@ class DashboardApp:
 
     async def publish_data(self, subtopic: str, payload: str, retain: bool = True):
         """Publish payload to MQTT topic with retain enabled by default."""
-        topic = f"arduino/{self.app_id}/{subtopic}"
+        topic = f"{self.app_id}/{subtopic}"
         await mqtt.async_publish(self.hass, topic, payload, retain=retain)
