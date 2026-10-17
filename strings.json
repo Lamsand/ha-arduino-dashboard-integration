@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Arduino Dashboard",
+        "description": "Do you want to set up the HA Arduino Dashboard? This will load all configured dashboard apps."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HA Arduino Dashboard is already configured."
+    }
+  }
+}

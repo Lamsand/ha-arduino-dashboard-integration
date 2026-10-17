@@ -1,0 +1,11 @@
+{
+  "domain": "ha-arduino-dashboard",
+  "name": "HA Arduino Dashboard",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["mqtt"],
+  "documentation": "https://github.com/your-repo",
+  "iot_class": "local_push",
+  "requirements": [],
+  "version": "1.0.0"
+}
