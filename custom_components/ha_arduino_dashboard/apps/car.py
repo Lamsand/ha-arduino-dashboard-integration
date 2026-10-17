@@ -24,7 +24,8 @@ class CarApp(DashboardApp):
         }
 
         # Luister naar wijzigingen van de opgegeven Home Assistant entiteiten
-        self.hass.states.async_track_state_change_event(
+        async_track_state_change_event(
+            self.hass,
             list(self.entity_topic_map.keys()),
             self._async_on_ha_state_change,
         )
