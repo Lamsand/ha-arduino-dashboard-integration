@@ -2,12 +2,46 @@
   "config": {
     "step": {
       "user": {
-        "title": "HA Arduino Dashboard",
-        "description": "Do you want to set up the HA Arduino Dashboard? This will load all configured dashboard apps."
+        "title": "Mijn App Manager Instellen",
+        "description": "Klik op Opslaan om de App Manager in te schakelen."
       }
     },
     "abort": {
-      "single_instance_allowed": "HA Arduino Dashboard is already configured."
+      "single_instance_allowed": "De App Manager is al geïnstalleerd."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Beheer je Apps",
+        "menu_options": {
+          "add_app": "Nieuwe app toevoegen",
+          "edit_app": "Bestaande app bewerken",
+          "delete_app": "App verwijderen"
+        }
+      },
+      "add_app": {
+        "title": "Nieuwe App Toevoegen",
+        "data": {
+          "app_name": "Naam van de app",
+          "target_entity": "Gekoppelde entiteit"
+        }
+      },
+      "edit_app": {
+        "title": "Kies de app die je wilt bewerken"
+      },
+      "edit_app_details": {
+        "title": "App bewerken",
+        "data": {
+          "target_entity": "Gekoppelde entiteit"
+        }
+      },
+      "delete_app": {
+        "title": "Kies de app die je wilt verwijderen"
+      }
+    },
+    "error": {
+      "app_exists": "Er bestaat al een app met deze naam."
     }
   }
 }
