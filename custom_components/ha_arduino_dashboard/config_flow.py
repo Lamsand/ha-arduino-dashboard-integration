@@ -2,6 +2,7 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.core import callback
+from homeassistant.data_entry_flow import section
 from homeassistant.helpers import selector
 
 DOMAIN = "ha_arduino_dashboard"
@@ -41,90 +42,100 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+            options = {}
+            for app_options in user_input.values():
+                if isinstance(app_options, dict):
+                    options.update(app_options)
+            return self.async_create_entry(title="", data=options)
 
         opts = self.config_entry.options
 
         schema = vol.Schema(
             {
-                vol.Optional(
-                    "car_enabled",
-                    default=opts.get("car_enabled", False),
-                ): selector.BooleanSelector(),
-
-                vol.Optional(
-                    "car_battery_entity",
-                    default=opts.get("car_battery_entity"),
-                ): selector.EntitySelector(
-                    selector.EntitySelectorConfig(
-                        domain=["sensor", "number"],
-                        multiple=False,
-                    )
+                vol.Optional("car"): section(
+                    vol.Schema(
+                        {
+                            vol.Optional(
+                                "car_enabled",
+                                default=opts.get("car_enabled", False),
+                            ): selector.BooleanSelector(),
+                            vol.Optional(
+                                "car_battery_entity",
+                                default=opts.get("car_battery_entity"),
+                            ): selector.EntitySelector(
+                                selector.EntitySelectorConfig(
+                                    domain=["sensor", "number"],
+                                    multiple=False,
+                                )
+                            ),
+                            vol.Optional(
+                                "car_range_entity",
+                                default=opts.get("car_range_entity"),
+                            ): selector.EntitySelector(
+                                selector.EntitySelectorConfig(
+                                    domain=["sensor"],
+                                    multiple=False,
+                                )
+                            ),
+                            vol.Optional(
+                                "car_charging_power_entity",
+                                default=opts.get("car_charging_power_entity"),
+                            ): selector.EntitySelector(
+                                selector.EntitySelectorConfig(
+                                    domain=["sensor"],
+                                    multiple=False,
+                                )
+                            ),
+                            vol.Optional(
+                                "car_target_charge_entity",
+                                default=opts.get("car_target_charge_entity"),
+                            ): selector.EntitySelector(
+                                selector.EntitySelectorConfig(
+                                    domain=["sensor", "number"],
+                                    multiple=False,
+                                )
+                            ),
+                        }
+                    ),
+                    {"collapsed": True},
                 ),
-
-                vol.Optional(
-                    "car_range_entity",
-                    default=opts.get("car_range_entity"),
-                ): selector.EntitySelector(
-                    selector.EntitySelectorConfig(
-                        domain=["sensor"],
-                        multiple=False,
-                    )
-                ),
-
-                vol.Optional(
-                    "car_charging_power_entity",
-                    default=opts.get("car_charging_power_entity"),
-                ): selector.EntitySelector(
-                    selector.EntitySelectorConfig(
-                        domain=["sensor"],
-                        multiple=False,
-                    )
-                ),
-
-                vol.Optional(
-                    "car_target_charge_entity",
-                    default=opts.get("car_target_charge_entity"),
-                ): selector.EntitySelector(
-                    selector.EntitySelectorConfig(
-                        domain=["sensor", "number"],
-                        multiple=False,
-                    )
-                ),
-
-                vol.Optional(
-                    "energy_enabled",
-                    default=opts.get("energy_enabled", False),
-                ): selector.BooleanSelector(),
-
-                vol.Optional(
-                    "energy_pv_entity",
-                    default=opts.get("energy_pv_entity"),
-                ): selector.EntitySelector(
-                    selector.EntitySelectorConfig(
-                        domain=["sensor"],
-                        multiple=False,
-                    )
-                ),
-
-                vol.Optional(
-                    "energy_smart_meter_entity",
-                    default=opts.get("energy_smart_meter_entity"),
-                ): selector.EntitySelector(
-                    selector.EntitySelectorConfig(
-                        domain=["sensor"],
-                        multiple=False,
-                    )
-                ),
-
-                vol.Optional(
-                    "energy_total_consumption_entity",
-                    default=opts.get("energy_total_consumption_entity"),
-                ): selector.EntitySelector(
-                    selector.EntitySelectorConfig(
-                        domain=["sensor"],
-                        multiple=False,
-                    )
+                vol.Optional("energy"): section(
+                    vol.Schema(
+                        {
+                            vol.Optional(
+                                "energy_enabled",
+                                default=opts.get("energy_enabled", False),
+                            ): selector.BooleanSelector(),
+                            vol.Optional(
+                                "energy_pv_entity",
+                                default=opts.get("energy_pv_entity"),
+                            ): selector.EntitySelector(
+                                selector.EntitySelectorConfig(
+                                    domain=["sensor"],
+                                    multiple=False,
+                                )
+                            ),
+                            vol.Optional(
+                                "energy_smart_meter_entity",
+                                default=opts.get("energy_smart_meter_entity"),
+                            ): selector.EntitySelector(
+                                selector.EntitySelectorConfig(
+                                    domain=["sensor"],
+                                    multiple=False,
+                                )
+                            ),
+                            vol.Optional(
+                                "energy_total_consumption_entity",
+                                default=opts.get("energy_total_consumption_entity"),
+                            ): selector.EntitySelector(
+                                selector.EntitySelectorConfig(
+                                    domain=["sensor"],
+                                    multiple=False,
+                                )
+                            ),
+                        }
+                    ),
+                    {"collapsed": True},
                 ),
             }
         )
