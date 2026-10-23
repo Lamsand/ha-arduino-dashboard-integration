@@ -48,3 +48,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     """Herlaad de integratie direct zodra er een app is toegevoegd, bewerkt of verwijderd."""
     await hass.config_entries.async_reload(entry.entry_id)
+    
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Ruim de integratie op wanneer Home Assistant haar uitlaadt."""
+    hass.data.get(DOMAIN, {}).pop(entry.entry_id, None)
+    return True
