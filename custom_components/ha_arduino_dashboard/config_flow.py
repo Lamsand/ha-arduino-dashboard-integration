@@ -91,6 +91,31 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                         multiple=False,
                     )
                 ),
+
+                vol.Optional(
+                    "energy_enabled",
+                    default=opts.get("energy_enabled", False),
+                ): selector.BooleanSelector(),
+
+                vol.Optional(
+                    "energy_pv_entity",
+                    default=opts.get("energy_pv_entity"),
+                ): selector.EntitySelector(
+                    selector.EntitySelectorConfig(
+                        domain=["sensor"],
+                        multiple=False,
+                    )
+                ),
+
+                vol.Optional(
+                    "energy_smart_meter_entity",
+                    default=opts.get("energy_smart_meter_entity"),
+                ): selector.EntitySelector(
+                    selector.EntitySelectorConfig(
+                        domain=["sensor"],
+                        multiple=False,
+                    )
+                ),
             }
         )
 

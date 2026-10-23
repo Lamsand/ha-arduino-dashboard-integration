@@ -19,7 +19,10 @@
           "car_battery_entity": "Batterij / Brandstof sensor",
           "car_range_entity": "Actieradius / Range sensor",
           "car_charging_power_entity": "Laadvermogen sensor",
-          "car_target_charge_entity": "Laadlimiet / Doelpercentage"
+          "car_target_charge_entity": "Laadlimiet / Doelpercentage",
+          "energy_enabled": "Energy inschakelen",
+          "energy_pv_entity": "PV-opbrengst sensor",
+          "energy_smart_meter_entity": "Slimme-meter sensor"
         }
       }
     }

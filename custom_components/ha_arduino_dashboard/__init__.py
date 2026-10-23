@@ -2,18 +2,26 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .apps.car import CarApp
+from .apps.energy import EnergyApp
 from .const import DOMAIN
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up the Arduino Dashboard integration."""
     options = entry.options
-    app = None
-    if options.get("car_enabled", False):
-        app = CarApp(hass, entry, options)
-        await app.async_setup()
+    apps = {}
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = app
+    if options.get("car_enabled", False):
+        car_app = CarApp(hass, entry, options)
+        await car_app.async_setup()
+        apps["car"] = car_app
+
+    if options.get("energy_enabled", False):
+        energy_app = EnergyApp(hass, entry, options)
+        await energy_app.async_setup()
+        apps["energy"] = energy_app
+
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = apps
     entry.async_on_unload(entry.add_update_listener(update_listener))
 
     return True
