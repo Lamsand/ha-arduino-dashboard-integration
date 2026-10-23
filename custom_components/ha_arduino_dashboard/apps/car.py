@@ -1,6 +1,9 @@
 """Car App for HA Arduino Dashboard."""
 import logging
+
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.event import async_track_state_change_event
+
 from .base import DashboardApp
 
 _LOGGER = logging.getLogger(__name__)
@@ -9,26 +12,40 @@ _LOGGER = logging.getLogger(__name__)
 class CarApp(DashboardApp):
     """Car App pushing Home Assistant states to Arduino via MQTT."""
 
-    def __init__(self, hass, entry_id: str):
-        super().__init__(hass, entry_id=entry_id, app_id="car", name="Arduino Car Dashboard")
+    def __init__(self, hass, entry: ConfigEntry, options: dict[str, object]):
+        super().__init__(
+            hass,
+            entry_id=entry.entry_id,
+            app_id="car",
+            name="Arduino Car Dashboard",
+        )
+        self.entry = entry
+        self.entity_topic_map = {
+            entity_id: topic
+            for option, topic in (
+                ("car_battery_entity", "battery"),
+                ("car_range_entity", "cruisingRange"),
+                ("car_charging_power_entity", "chargingPower"),
+                ("car_target_charge_entity", "targetCharge"),
+            )
+            if isinstance((entity_id := options.get(option)), str) and entity_id
+        }
 
     async def async_setup(self):
         """Set up device registration and HA state tracking for the Car app."""
         await super().async_setup()  # Registreert het apparaat in HA
         _LOGGER.info("Setting up Car App...")
 
-        self.entity_topic_map = {
-            "sensor.garage_id_7_accuniveau": "battery",
-            "sensor.alfen_laadpaal_eneco_real_power_sum": "chargingPower",
-            "sensor.garage_id_7_elektrisch_bereik": "cruisingRange",
-            "sensor.evcc_laadpaal_vehicle_limit_soc": "targetCharge",
-        }
+        if self.entity_topic_map:
+            unsubscribe = async_track_state_change_event(
+                self.hass, list(self.entity_topic_map), self._async_on_ha_state_change
+            )
+            self.entry.async_on_unload(unsubscribe)
 
-        async_track_state_change_event(
-            self.hass,
-            list(self.entity_topic_map.keys()),
-            self._async_on_ha_state_change,
-        )
+        for entity_id, topic in self.entity_topic_map.items():
+            state = self.hass.states.get(entity_id)
+            if state is not None and state.state not in ("unknown", "unavailable"):
+                await self.publish_data(topic, state.state, retain=True)
 
     async def _async_on_ha_state_change(self, event):
         """Send updated state to Arduino over MQTT (retained)."""

@@ -73,11 +73,21 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                 ),
 
                 vol.Optional(
-                    "car_odometer_entity",
-                    default=opts.get("car_odometer_entity"),
+                    "car_charging_power_entity",
+                    default=opts.get("car_charging_power_entity"),
                 ): selector.EntitySelector(
                     selector.EntitySelectorConfig(
                         domain=["sensor"],
+                        multiple=False,
+                    )
+                ),
+
+                vol.Optional(
+                    "car_target_charge_entity",
+                    default=opts.get("car_target_charge_entity"),
+                ): selector.EntitySelector(
+                    selector.EntitySelectorConfig(
+                        domain=["sensor", "number"],
                         multiple=False,
                     )
                 ),
