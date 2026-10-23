@@ -66,11 +66,11 @@ class EnergyApp(DashboardApp):
                 await self.publish_data(topic, state.state, retain=True)
 
     async def _async_publish_short(self, now):
-        """Publish the short energy value periodically."""
+        """Publish the short energy value every five seconds."""
         await self.publish_data("newValue", "Short", retain=False)
 
     async def _async_publish_long(self, now):
-        """Publish the long energy value periodically."""
+        """Publish the long energy value every thirty seconds."""
         await self.publish_data("newValue", "Long", retain=False)
 
     async def _async_on_ha_state_change(self, event):
