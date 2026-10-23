@@ -23,8 +23,9 @@ class EnergyApp(DashboardApp):
         self.entity_topic_map = {
             entity_id: topic
             for option, topic in (
-                ("energy_pv_entity", "pv"),
-                ("energy_smart_meter_entity", "smartMeter"),
+                ("energy_pv_entity", "currentProduction"),
+                ("energy_smart_meter_entity", "currentImport"),
+                ("energy_total_consumption_entity", "currentConsumption"),
             )
             if isinstance((entity_id := options.get(option)), str) and entity_id
         }

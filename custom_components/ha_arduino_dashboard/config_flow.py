@@ -116,6 +116,16 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                         multiple=False,
                     )
                 ),
+
+                vol.Optional(
+                    "energy_total_consumption_entity",
+                    default=opts.get("energy_total_consumption_entity"),
+                ): selector.EntitySelector(
+                    selector.EntitySelectorConfig(
+                        domain=["sensor"],
+                        multiple=False,
+                    )
+                ),
             }
         )
 

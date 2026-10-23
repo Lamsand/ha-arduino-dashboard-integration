@@ -22,7 +22,8 @@
           "car_target_charge_entity": "Laadlimiet / Doelpercentage",
           "energy_enabled": "Energy inschakelen",
           "energy_pv_entity": "PV-opbrengst sensor",
-          "energy_smart_meter_entity": "Slimme-meter sensor"
+          "energy_smart_meter_entity": "Slimme-meter sensor",
+          "energy_total_consumption_entity": "Totaal verbruik sensor"
         }
       }
     }
