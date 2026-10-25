@@ -3,37 +3,36 @@
     "step": {
       "user": {
         "title": "HA Arduino Dashboard",
-        "description": "Klik op Opslaan om de integratie in te schakelen."
+        "description": "Click Submit to enable the integration."
       }
     },
     "abort": {
-      "single_instance_allowed": "De integratie is al geïnstalleerd."
+      "single_instance_allowed": "The integration is already configured."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Dashboard Instellingen",
-        "data": {
-        },
+        "title": "Dashboard Settings",
+        "data": {},
         "sections": {
           "car": {
             "name": "Car",
             "data": {
-              "car_enabled": "Car inschakelen",
-              "car_battery_entity": "Batterij / Brandstof sensor",
-              "car_range_entity": "Actieradius / Range sensor",
-              "car_charging_power_entity": "Laadvermogen sensor",
-              "car_target_charge_entity": "Laadlimiet / Doelpercentage"
+              "car_enabled": "Enable car",
+              "car_battery_entity": "Battery / fuel sensor",
+              "car_range_entity": "Range sensor",
+              "car_charging_power_entity": "Charging power sensor",
+              "car_target_charge_entity": "Target charge / charge limit"
             }
           },
           "energy": {
             "name": "Energy",
             "data": {
-              "energy_enabled": "Energy inschakelen",
-              "energy_pv_entity": "PV-opbrengst sensor",
-              "energy_smart_meter_entity": "Slimme-meter sensor",
-              "energy_total_consumption_entity": "Totaal verbruik sensor"
+              "energy_enabled": "Enable energy",
+              "energy_pv_entity": "PV generation sensor",
+              "energy_smart_meter_entity": "Smart meter sensor",
+              "energy_total_consumption_entity": "Total consumption sensor"
             }
           }
         }
