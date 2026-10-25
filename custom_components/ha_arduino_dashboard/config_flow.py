@@ -2,7 +2,6 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import Optional as FlowOptional
 from homeassistant.data_entry_flow import section
 from homeassistant.helpers import selector
 
@@ -50,7 +49,13 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
             }
             for app_options in user_input.values():
                 if isinstance(app_options, dict):
-                    options.update(app_options)
+                    options.update(
+                        {
+                            key: value
+                            for key, value in app_options.items()
+                            if value is not None
+                        }
+                    )
             return self.async_create_entry(title="", data=options)
 
         opts = self.config_entry.options
@@ -64,56 +69,52 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                                 "car_enabled",
                                 default=opts.get("car_enabled", False),
                             ): selector.BooleanSelector(),
-                            FlowOptional(
+                            vol.Optional(
                                 "car_battery_entity",
                                 **(
                                     {"default": opts["car_battery_entity"]}
                                     if opts.get("car_battery_entity")
                                     else {}
                                 ),
-                                visible={"field": "car_enabled", "value": True},
                             ): selector.EntitySelector(
                                 selector.EntitySelectorConfig(
                                     domain=["sensor", "number"],
                                     multiple=False,
                                 )
                             ),
-                            FlowOptional(
+                            vol.Optional(
                                 "car_range_entity",
                                 **(
                                     {"default": opts["car_range_entity"]}
                                     if opts.get("car_range_entity")
                                     else {}
                                 ),
-                                visible={"field": "car_enabled", "value": True},
                             ): selector.EntitySelector(
                                 selector.EntitySelectorConfig(
                                     domain=["sensor"],
                                     multiple=False,
                                 )
                             ),
-                            FlowOptional(
+                            vol.Optional(
                                 "car_charging_power_entity",
                                 **(
                                     {"default": opts["car_charging_power_entity"]}
                                     if opts.get("car_charging_power_entity")
                                     else {}
                                 ),
-                                visible={"field": "car_enabled", "value": True},
                             ): selector.EntitySelector(
                                 selector.EntitySelectorConfig(
                                     domain=["sensor"],
                                     multiple=False,
                                 )
                             ),
-                            FlowOptional(
+                            vol.Optional(
                                 "car_target_charge_entity",
                                 **(
                                     {"default": opts["car_target_charge_entity"]}
                                     if opts.get("car_target_charge_entity")
                                     else {}
                                 ),
-                                visible={"field": "car_enabled", "value": True},
                             ): selector.EntitySelector(
                                 selector.EntitySelectorConfig(
                                     domain=["sensor", "number"],
@@ -131,35 +132,33 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                                 "energy_enabled",
                                 default=opts.get("energy_enabled", False),
                             ): selector.BooleanSelector(),
-                            FlowOptional(
+                            vol.Optional(
                                 "energy_pv_entity",
                                 **(
                                     {"default": opts["energy_pv_entity"]}
                                     if opts.get("energy_pv_entity")
                                     else {}
                                 ),
-                                visible={"field": "energy_enabled", "value": True},
                             ): selector.EntitySelector(
                                 selector.EntitySelectorConfig(
                                     domain=["sensor"],
                                     multiple=False,
                                 )
                             ),
-                            FlowOptional(
+                            vol.Optional(
                                 "energy_smart_meter_entity",
                                 **(
                                     {"default": opts["energy_smart_meter_entity"]}
                                     if opts.get("energy_smart_meter_entity")
                                     else {}
                                 ),
-                                visible={"field": "energy_enabled", "value": True},
                             ): selector.EntitySelector(
                                 selector.EntitySelectorConfig(
                                     domain=["sensor"],
                                     multiple=False,
                                 )
                             ),
-                            FlowOptional(
+                            vol.Optional(
                                 "energy_total_consumption_entity",
                                 **(
                                     {
@@ -170,7 +169,6 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                                     if opts.get("energy_total_consumption_entity")
                                     else {}
                                 ),
-                                visible={"field": "energy_enabled", "value": True},
                             ): selector.EntitySelector(
                                 selector.EntitySelectorConfig(
                                     domain=["sensor"],
