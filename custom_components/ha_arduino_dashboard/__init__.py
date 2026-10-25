@@ -2,6 +2,7 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 
 from .apps.car import CarApp
 from .apps.energy import EnergyApp
@@ -22,17 +23,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     apps = {}
     entries[entry.entry_id] = apps
     options = entry.options
+    device_registry = dr.async_get(hass)
     setup_complete = False
     try:
         if options.get("car_enabled", False):
             car_app = CarApp(hass, entry, options)
             await car_app.async_setup()
             apps["car"] = car_app
+        else:
+            _remove_app_device(device_registry, "car")
 
         if options.get("energy_enabled", False):
             energy_app = EnergyApp(hass, entry, options)
             await energy_app.async_setup()
             apps["energy"] = energy_app
+        else:
+            _remove_app_device(device_registry, "energy")
 
         entry.async_on_unload(entry.add_update_listener(update_listener))
         setup_complete = True
@@ -41,6 +47,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             entries.pop(entry.entry_id, None)
 
     return True
+
+
+def _remove_app_device(device_registry: dr.DeviceRegistry, app_id: str) -> None:
+    """Remove a disabled app's device from the Home Assistant device registry."""
+    device = device_registry.async_get_device(
+        identifiers={(DOMAIN, app_id)}
+    )
+    if device is not None:
+        device_registry.async_remove_device(device.id)
 
 
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
