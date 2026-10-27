@@ -4,6 +4,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
+from .apps.basics import BasicsApp
 from .apps.car import CarApp
 from .apps.energy import EnergyApp
 from .const import DOMAIN
@@ -26,6 +27,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     device_registry = dr.async_get(hass)
     setup_complete = False
     try:
+        basics_app = BasicsApp(hass, entry)
+        await basics_app.async_setup()
+        apps["basics"] = basics_app
+
         if options.get("car_enabled", False):
             car_app = CarApp(hass, entry, options)
             await car_app.async_setup()

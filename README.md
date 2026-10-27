@@ -14,6 +14,7 @@ That goal is not reached yet. The integration currently supports only the apps l
 
 | Arduino dashboard app | Integration status |
 | --- | --- |
+| Basics | Included |
 | Car | Included |
 | Energy | Included |
 | EVCC | Not integrated yet |
@@ -52,6 +53,10 @@ That goal is not reached yet. The integration currently supports only the apps l
 
 Open the integration options and enable the apps you want to use. Entity selections are optional; select only the entities you want the integration to publish.
 
+### Basics
+
+The Basics app is always enabled and requires no configuration. It publishes the local time in `HH:MM` format to `basics/home/time` at the start of every minute.
+
 ### Car
 
 | Home Assistant option | MQTT topic |
@@ -80,7 +85,7 @@ Both pulse messages use the same topic, so both may be published around the same
 
 ## Enabling and disabling apps
 
-Each app can be enabled or disabled independently. A disabled app does not publish MQTT messages, and its Home Assistant device entry is removed when the integration reloads.
+Car and Energy can be enabled or disabled independently. Basics is always enabled. A disabled configurable app does not publish MQTT messages, and its Home Assistant device entry is removed when the integration reloads.
 
 ## Checking MQTT messages
 
