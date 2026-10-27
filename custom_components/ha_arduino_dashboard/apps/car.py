@@ -57,7 +57,7 @@ class CarApp(DashboardApp):
 
         subtopic = self.entity_topic_map.get(entity_id)
         if subtopic:
-            # retain=True zorgt dat het bericht op de MQTT broker bewaard blijft
+            # retain=True keeps the message on the MQTT broker.
             await self.publish_data(subtopic, str(new_state.state), retain=True)
             _LOGGER.debug(
                 "Pushed %s state (%s) to MQTT topic car/%s (retained)",

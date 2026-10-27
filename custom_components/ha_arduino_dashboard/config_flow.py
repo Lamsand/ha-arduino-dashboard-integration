@@ -12,7 +12,7 @@ class ArduinoDashboardConfigFlow(
     config_entries.ConfigFlow,
     domain=DOMAIN,
 ):
-    """Eerste configuratie bij het toevoegen van de integratie."""
+    """Initial configuration when adding the integration."""
 
     VERSION = 1
 
@@ -38,7 +38,7 @@ class ArduinoDashboardConfigFlow(
 
 
 class CustomOptionsFlowHandler(config_entries.OptionsFlow):
-    """Instellingen voor het dashboard."""
+    """Dashboard settings."""
 
     async def async_step_init(self, user_input=None):
         if user_input is not None:
