@@ -55,7 +55,7 @@ Open the integration options and enable the apps you want to use. Entity selecti
 
 ### Basics
 
-The Basics app is always enabled and requires no configuration. It publishes the local time in `HH:MM` format to `basics/home/time` at the start of every minute.
+The Basics app is always enabled and requires no configuration. It publishes the local time in `HH:MM` format to `home/time` at the start of every minute. It also publishes `5s` to `home/interval` every five seconds and `30s` every thirty seconds, aligned to the clock boundaries. At the 30-second boundaries, both values are published in sequence.
 
 ### Car
 
@@ -75,13 +75,6 @@ The Basics app is always enabled and requires no configuration. It publishes the
 | Total consumption | `energy/currentConsumption` |
 
 Sensor values are published at startup and when they change. These messages are retained. Entities in `unknown` or `unavailable` state are skipped.
-
-Energy also publishes two non-retained messages on `energy/newValue`:
-
-- `Short` every 5 seconds
-- `Long` every 30 seconds
-
-Both pulse messages use the same topic, so both may be published around the same 30-second mark.
 
 ## Enabling and disabling apps
 

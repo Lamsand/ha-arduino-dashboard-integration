@@ -1,12 +1,8 @@
 """Energy App for HA Arduino Dashboard."""
 import logging
-from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.event import (
-    async_track_state_change_event,
-    async_track_time_interval,
-)
+from homeassistant.helpers.event import async_track_state_change_event
 
 from .base import DashboardApp
 
@@ -45,33 +41,10 @@ class EnergyApp(DashboardApp):
             )
             self.entry.async_on_unload(unsubscribe)
 
-        self.entry.async_on_unload(
-            async_track_time_interval(
-                self.hass,
-                self._async_publish_short,
-                timedelta(seconds=5),
-            )
-        )
-        self.entry.async_on_unload(
-            async_track_time_interval(
-                self.hass,
-                self._async_publish_long,
-                timedelta(seconds=30),
-            )
-        )
-
         for entity_id, topic in self.entity_topic_map.items():
             state = self.hass.states.get(entity_id)
             if state is not None and state.state not in ("unknown", "unavailable"):
                 await self.publish_data(topic, state.state, retain=True)
-
-    async def _async_publish_short(self, now):
-        """Publish the short energy value every five seconds."""
-        await self.publish_data("newValue", "Short", retain=False)
-
-    async def _async_publish_long(self, now):
-        """Publish the long energy value every thirty seconds."""
-        await self.publish_data("newValue", "Long", retain=False)
 
     async def _async_on_ha_state_change(self, event):
         """Send updated state to Arduino over MQTT (retained)."""
