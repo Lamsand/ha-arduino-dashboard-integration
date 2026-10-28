@@ -55,7 +55,7 @@ Open the integration options and enable the apps you want to use. Entity selecti
 
 ### Basics
 
-The Basics app is always enabled and requires no configuration. It publishes the local time in `HH:MM` format to `home/time` at the start of every minute. It also publishes `5s` to `home/interval` every five seconds and `30s` every thirty seconds, aligned to the clock boundaries. At the 30-second boundaries, both values are published in sequence.
+The Basics app is always enabled and requires no configuration. It publishes the local time in `HH:MM` format to `home/time` at the start of every minute. It also publishes `5s` to `home/interval` every five seconds and `30s` every thirty seconds, aligned to the clock boundaries. At the 30-second boundaries, both values are published in sequence. The app also exposes a Connection sensor that shows whether the Arduino dashboard has checked in recently. It is on when the dashboard has been online within the last 15 seconds, and off otherwise.
 
 ### Car
 
