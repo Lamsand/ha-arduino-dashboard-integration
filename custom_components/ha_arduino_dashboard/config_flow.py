@@ -60,6 +60,45 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
 
         opts = self.config_entry.options
 
+        lights_schema = {
+            vol.Optional(
+                "lights_enabled",
+                default=opts.get("lights_enabled", False),
+            ): selector.BooleanSelector(),
+        }
+        for lamp in range(1, 7):
+            entity_key = f"lights_lamp_{lamp}_entity"
+            name_key = f"lights_lamp_{lamp}_name"
+            lights_schema.update(
+                {
+                    vol.Optional(
+                        entity_key,
+                        **(
+                            {"default": opts[entity_key]}
+                            if opts.get(entity_key)
+                            else {}
+                        ),
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain=["light"],
+                            multiple=False,
+                        )
+                    ),
+                    vol.Optional(
+                        f"lights_lamp_{lamp}_on_off",
+                        default=opts.get(f"lights_lamp_{lamp}_on_off", False),
+                    ): selector.BooleanSelector(),
+                    vol.Optional(
+                        name_key,
+                        **(
+                            {"default": opts[name_key]}
+                            if isinstance(opts.get(name_key), str)
+                            else {}
+                        ),
+                    ): selector.TextSelector(),
+                }
+            )
+
         schema = vol.Schema(
             {
                 vol.Optional("car"): section(
@@ -180,43 +219,7 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                     {"collapsed": True},
                 ),
                 vol.Optional("lights"): section(
-                    vol.Schema(
-                        {
-                            vol.Optional(
-                                "lights_enabled",
-                                default=opts.get("lights_enabled", False),
-                            ): selector.BooleanSelector(),
-                            **{
-                                vol.Optional(
-                                    f"lights_lamp_{lamp}_entity",
-                                    **(
-                                        {
-                                            "default": opts[
-                                                f"lights_lamp_{lamp}_entity"
-                                            ]
-                                        }
-                                        if opts.get(f"lights_lamp_{lamp}_entity")
-                                        else {}
-                                    ),
-                                ): selector.EntitySelector(
-                                    selector.EntitySelectorConfig(
-                                        domain=["light"],
-                                        multiple=False,
-                                    )
-                                )
-                                for lamp in range(1, 7)
-                            },
-                            **{
-                                vol.Optional(
-                                    f"lights_lamp_{lamp}_on_off",
-                                    default=opts.get(
-                                        f"lights_lamp_{lamp}_on_off", False
-                                    ),
-                                ): selector.BooleanSelector()
-                                for lamp in range(1, 7)
-                            },
-                        }
-                    ),
+                    vol.Schema(lights_schema),
                     {"collapsed": True},
                 ),
             }
