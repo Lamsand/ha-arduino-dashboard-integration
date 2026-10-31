@@ -17,9 +17,9 @@ That goal is not reached yet. The integration currently supports only the apps l
 | Basics | Included |
 | Car | Included |
 | Energy | Included |
+| Lights | Included |
 | EVCC | Not integrated yet |
 | Heat pump | Not integrated yet |
-| Lights | Not integrated yet |
 | Mower | Not integrated yet |
 | Music | Not integrated yet |
 | Ventilation | Not integrated yet |
@@ -76,13 +76,22 @@ The Basics app is always enabled and requires no configuration. It publishes the
 
 Sensor values are published at startup and when they change. These messages are retained. Entities in `unknown` or `unavailable` state are skipped.
 
+### Lights
+
+Enable the Lights app, then configure up to six light entities. Each light uses
+`lights/lampX` for its switch command and retained state, where `X` is its slot
+number from 1 to 6. Send `Switch` to toggle it. For dimmable lights, send a
+brightness percentage (`0`-`100`) to `lights/lampX/br`; brightness changes are
+published to `lights/lampX`. Mark a light as **on/off only** to disable
+brightness commands and instead publish its `on`/`off` state to `lights/lampX`.
+
 ## Enabling and disabling apps
 
-Car and Energy can be enabled or disabled independently. Basics is always enabled. A disabled configurable app does not publish MQTT messages, and its Home Assistant device entry is removed when the integration reloads.
+Car, Energy, and Lights can be enabled or disabled independently. Basics is always enabled. A disabled configurable app does not publish MQTT messages, and its Home Assistant device entry is removed when the integration reloads.
 
 ## Checking MQTT messages
 
-In Home Assistant, open **Settings → Devices & services → MQTT → Listen to a topic**. Subscribe to `energy/#` or `car/#` to inspect the integration's messages.
+In Home Assistant, open **Settings → Devices & services → MQTT → Listen to a topic**. Subscribe to `energy/#`, `car/#`, or `lights/#` to inspect the integration's messages.
 
 ## Related projects
 

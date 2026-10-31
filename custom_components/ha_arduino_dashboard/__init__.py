@@ -8,6 +8,7 @@ from homeassistant.helpers import device_registry as dr
 from .apps.basics import BasicsApp
 from .apps.car import CarApp
 from .apps.energy import EnergyApp
+from .apps.lights import LightsApp
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -47,6 +48,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             apps["energy"] = energy_app
         else:
             _remove_app_device(device_registry, "energy")
+
+        if options.get("lights_enabled", False):
+            lights_app = LightsApp(hass, entry, options)
+            await lights_app.async_setup()
+            apps["lights"] = lights_app
+        else:
+            _remove_app_device(device_registry, "lights")
 
         await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
         entry.async_on_unload(entry.add_update_listener(update_listener))
