@@ -49,13 +49,14 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
             }
             for app_options in user_input.values():
                 if isinstance(app_options, dict):
-                    options.update(
-                        {
-                            key: value
-                            for key, value in app_options.items()
-                            if value is not None
-                        }
-                    )
+                    pending_options = [app_options]
+                    while pending_options:
+                        section_options = pending_options.pop()
+                        for key, value in section_options.items():
+                            if isinstance(value, dict):
+                                pending_options.append(value)
+                            elif value is not None:
+                                options[key] = value
             return self.async_create_entry(title="", data=options)
 
         opts = self.config_entry.options
@@ -69,34 +70,37 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
         for lamp in range(1, 7):
             entity_key = f"lights_lamp_{lamp}_entity"
             name_key = f"lights_lamp_{lamp}_name"
-            lights_schema.update(
-                {
-                    vol.Optional(
-                        entity_key,
-                        **(
-                            {"default": opts[entity_key]}
-                            if opts.get(entity_key)
-                            else {}
+            lights_schema[vol.Optional(f"lamp_{lamp}")] = section(
+                vol.Schema(
+                    {
+                        vol.Optional(
+                            entity_key,
+                            **(
+                                {"default": opts[entity_key]}
+                                if opts.get(entity_key)
+                                else {}
+                            ),
+                        ): selector.EntitySelector(
+                            selector.EntitySelectorConfig(
+                                domain=["light"],
+                                multiple=False,
+                            )
                         ),
-                    ): selector.EntitySelector(
-                        selector.EntitySelectorConfig(
-                            domain=["light"],
-                            multiple=False,
-                        )
-                    ),
-                    vol.Optional(
-                        f"lights_lamp_{lamp}_on_off",
-                        default=opts.get(f"lights_lamp_{lamp}_on_off", False),
-                    ): selector.BooleanSelector(),
-                    vol.Optional(
-                        name_key,
-                        **(
-                            {"default": opts[name_key]}
-                            if isinstance(opts.get(name_key), str)
-                            else {}
-                        ),
-                    ): selector.TextSelector(),
-                }
+                        vol.Optional(
+                            f"lights_lamp_{lamp}_on_off",
+                            default=opts.get(f"lights_lamp_{lamp}_on_off", False),
+                        ): selector.BooleanSelector(),
+                        vol.Optional(
+                            name_key,
+                            **(
+                                {"default": opts[name_key]}
+                                if isinstance(opts.get(name_key), str)
+                                else {}
+                            ),
+                        ): selector.TextSelector(),
+                    }
+                ),
+                {"collapsed": True},
             )
 
         schema = vol.Schema(
