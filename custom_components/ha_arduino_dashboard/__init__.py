@@ -49,9 +49,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         else:
             _remove_app_device(device_registry, "energy")
 
-        if options.get("lights_enabled", False):
-            lights_app = LightsApp(hass, entry, options)
-            await lights_app.async_setup()
+        lights_app = LightsApp(hass, entry, options)
+        lights_enabled = options.get("lights_enabled", False) is True
+        await lights_app.async_setup(enabled=lights_enabled)
+        if lights_enabled:
             apps["lights"] = lights_app
         else:
             _remove_app_device(device_registry, "lights")

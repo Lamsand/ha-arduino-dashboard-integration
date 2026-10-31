@@ -84,6 +84,10 @@ number from 1 to 6. Send `Switch` to toggle it. For dimmable lights, send a
 brightness percentage (`0`-`100`) to `lights/lampX/br`; brightness changes are
 published to `lights/lampX`. Mark a light as **on/off only** to disable
 brightness commands and instead publish its `on`/`off` state to `lights/lampX`.
+Whenever the integration starts or its configuration changes, it publishes
+retained configuration states for all six slots: `lights/lampX/enabled` is
+`on` only when the Lights app is enabled and an entity is selected, and
+`lights/lampX/on-off` reflects that slot's on/off-only setting.
 
 ## Enabling and disabling apps
 

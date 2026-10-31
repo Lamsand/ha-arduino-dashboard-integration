@@ -23,21 +23,37 @@ class LightsApp(DashboardApp):
             name="Arduino Lights Dashboard",
         )
         self.entry = entry
-        self.lights = [
+        self.lamp_configs = [
             (
                 lamp,
-                entity_id,
+                options.get(f"lights_lamp_{lamp}_entity"),
                 options.get(f"lights_lamp_{lamp}_on_off") is True,
             )
             for lamp in range(1, 7)
-            if isinstance(
-                (entity_id := options.get(f"lights_lamp_{lamp}_entity")), str
-            )
-            and entity_id
+        ]
+        self.lights = [
+            (lamp, entity_id, on_off_only)
+            for lamp, entity_id, on_off_only in self.lamp_configs
+            if isinstance(entity_id, str) and entity_id
         ]
 
-    async def async_setup(self):
-        """Register the app and subscribe to configured light topics."""
+    async def async_setup(self, enabled: bool = True):
+        """Publish lamp configuration and subscribe when the app is enabled."""
+        for lamp, entity_id, on_off_only in self.lamp_configs:
+            await self.publish_data(
+                f"lamp{lamp}/enabled",
+                "on"
+                if enabled and isinstance(entity_id, str) and entity_id
+                else "off",
+            )
+            await self.publish_data(
+                f"lamp{lamp}/on-off",
+                "on" if on_off_only else "off",
+            )
+
+        if not enabled:
+            return
+
         await super().async_setup()
         _LOGGER.info("Setting up Lights App...")
 
@@ -129,6 +145,8 @@ class LightsApp(DashboardApp):
                 brightness = new_state.attributes.get("brightness")
                 if old_brightness == brightness:
                     continue
-                payload = str(brightness)
+                payload = (
+                    "off" if brightness is None or brightness == 0 else str(brightness)
+                )
 
             await self.publish_data(f"lamp{lamp}", payload, retain=True)
