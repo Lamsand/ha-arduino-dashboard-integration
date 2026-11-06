@@ -39,56 +39,54 @@
             "name": "Lights",
             "data": {
               "lights_enabled": "Enable lights"
-            },
-            "sections": {
-              "lamp_1": {
-                "name": "Lamp 1",
-                "data": {
-                  "lights_lamp_1_entity": "Entity",
-                  "lights_lamp_1_on_off": "On-off only",
-                  "lights_lamp_1_name": "Name"
-                }
-              },
-              "lamp_2": {
-                "name": "Lamp 2",
-                "data": {
-                  "lights_lamp_2_entity": "Entity",
-                  "lights_lamp_2_on_off": "On-off only",
-                  "lights_lamp_2_name": "Name"
-                }
-              },
-              "lamp_3": {
-                "name": "Lamp 3",
-                "data": {
-                  "lights_lamp_3_entity": "Entity",
-                  "lights_lamp_3_on_off": "On-off only",
-                  "lights_lamp_3_name": "Name"
-                }
-              },
-              "lamp_4": {
-                "name": "Lamp 4",
-                "data": {
-                  "lights_lamp_4_entity": "Entity",
-                  "lights_lamp_4_on_off": "On-off only",
-                  "lights_lamp_4_name": "Name"
-                }
-              },
-              "lamp_5": {
-                "name": "Lamp 5",
-                "data": {
-                  "lights_lamp_5_entity": "Entity",
-                  "lights_lamp_5_on_off": "On-off only",
-                  "lights_lamp_5_name": "Name"
-                }
-              },
-              "lamp_6": {
-                "name": "Lamp 6",
-                "data": {
-                  "lights_lamp_6_entity": "Entity",
-                  "lights_lamp_6_on_off": "On-off only",
-                  "lights_lamp_6_name": "Name"
-                }
-              }
+            }
+          },
+          "lamp_1": {
+            "name": "Lights - Lamp 1",
+            "data": {
+              "lights_lamp_1_entity": "Entity",
+              "lights_lamp_1_on_off": "On-off only",
+              "lights_lamp_1_name": "Name"
+            }
+          },
+          "lamp_2": {
+            "name": "Lights - Lamp 2",
+            "data": {
+              "lights_lamp_2_entity": "Entity",
+              "lights_lamp_2_on_off": "On-off only",
+              "lights_lamp_2_name": "Name"
+            }
+          },
+          "lamp_3": {
+            "name": "Lights - Lamp 3",
+            "data": {
+              "lights_lamp_3_entity": "Entity",
+              "lights_lamp_3_on_off": "On-off only",
+              "lights_lamp_3_name": "Name"
+            }
+          },
+          "lamp_4": {
+            "name": "Lights - Lamp 4",
+            "data": {
+              "lights_lamp_4_entity": "Entity",
+              "lights_lamp_4_on_off": "On-off only",
+              "lights_lamp_4_name": "Name"
+            }
+          },
+          "lamp_5": {
+            "name": "Lights - Lamp 5",
+            "data": {
+              "lights_lamp_5_entity": "Entity",
+              "lights_lamp_5_on_off": "On-off only",
+              "lights_lamp_5_name": "Name"
+            }
+          },
+          "lamp_6": {
+            "name": "Lights - Lamp 6",
+            "data": {
+              "lights_lamp_6_entity": "Entity",
+              "lights_lamp_6_on_off": "On-off only",
+              "lights_lamp_6_name": "Name"
             }
           }
         }

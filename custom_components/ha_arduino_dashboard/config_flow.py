@@ -61,16 +61,11 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
 
         opts = self.config_entry.options
 
-        lights_schema = {
-            vol.Optional(
-                "lights_enabled",
-                default=opts.get("lights_enabled", False),
-            ): selector.BooleanSelector(),
-        }
+        lamp_sections = {}
         for lamp in range(1, 7):
             entity_key = f"lights_lamp_{lamp}_entity"
             name_key = f"lights_lamp_{lamp}_name"
-            lights_schema[vol.Optional(f"lamp_{lamp}")] = section(
+            lamp_sections[vol.Optional(f"lamp_{lamp}")] = section(
                 vol.Schema(
                     {
                         vol.Optional(
@@ -223,9 +218,17 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                     {"collapsed": True},
                 ),
                 vol.Optional("lights"): section(
-                    vol.Schema(lights_schema),
+                    vol.Schema(
+                        {
+                            vol.Optional(
+                                "lights_enabled",
+                                default=opts.get("lights_enabled", False),
+                            ): selector.BooleanSelector(),
+                        }
+                    ),
                     {"collapsed": True},
                 ),
+                **lamp_sections,
             }
         )
 
