@@ -49,53 +49,54 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
             }
             for app_options in user_input.values():
                 if isinstance(app_options, dict):
-                    pending_options = [app_options]
-                    while pending_options:
-                        section_options = pending_options.pop()
-                        for key, value in section_options.items():
-                            if isinstance(value, dict):
-                                pending_options.append(value)
-                            elif value is not None:
-                                options[key] = value
+                    options.update(
+                        {
+                            key: value
+                            for key, value in app_options.items()
+                            if value is not None
+                        }
+                    )
             return self.async_create_entry(title="", data=options)
 
         opts = self.config_entry.options
 
-        lamp_sections = {}
+        lights_schema = {
+            vol.Optional(
+                "lights_enabled",
+                default=opts.get("lights_enabled", False),
+            ): selector.BooleanSelector(),
+        }
         for lamp in range(1, 7):
             entity_key = f"lights_lamp_{lamp}_entity"
             name_key = f"lights_lamp_{lamp}_name"
-            lamp_sections[vol.Optional(f"lamp_{lamp}")] = section(
-                vol.Schema(
-                    {
-                        vol.Optional(
-                            entity_key,
-                            **(
-                                {"default": opts[entity_key]}
-                                if opts.get(entity_key)
-                                else {}
-                            ),
-                        ): selector.EntitySelector(
-                            selector.EntitySelectorConfig(
-                                domain=["light"],
-                                multiple=False,
-                            )
+            lights_schema.update(
+                {
+                    vol.Optional(
+                        entity_key,
+                        **(
+                            {"default": opts[entity_key]}
+                            if opts.get(entity_key)
+                            else {}
                         ),
-                        vol.Optional(
-                            f"lights_lamp_{lamp}_on_off",
-                            default=opts.get(f"lights_lamp_{lamp}_on_off", False),
-                        ): selector.BooleanSelector(),
-                        vol.Optional(
-                            name_key,
-                            **(
-                                {"default": opts[name_key]}
-                                if isinstance(opts.get(name_key), str)
-                                else {}
-                            ),
-                        ): selector.TextSelector(),
-                    }
-                ),
-                {"collapsed": True},
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain=["light"],
+                            multiple=False,
+                        )
+                    ),
+                    vol.Optional(
+                        f"lights_lamp_{lamp}_on_off",
+                        default=opts.get(f"lights_lamp_{lamp}_on_off", False),
+                    ): selector.BooleanSelector(),
+                    vol.Optional(
+                        name_key,
+                        **(
+                            {"default": opts[name_key]}
+                            if isinstance(opts.get(name_key), str)
+                            else {}
+                        ),
+                    ): selector.TextSelector(),
+                }
             )
 
         schema = vol.Schema(
@@ -218,17 +219,9 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                     {"collapsed": True},
                 ),
                 vol.Optional("lights"): section(
-                    vol.Schema(
-                        {
-                            vol.Optional(
-                                "lights_enabled",
-                                default=opts.get("lights_enabled", False),
-                            ): selector.BooleanSelector(),
-                        }
-                    ),
+                    vol.Schema(lights_schema),
                     {"collapsed": True},
                 ),
-                **lamp_sections,
             }
         )
 
