@@ -46,6 +46,11 @@ class CarApp(DashboardApp):
             state = self.hass.states.get(entity_id)
             if state is not None and state.state not in ("unknown", "unavailable"):
                 await self.publish_data(topic, state.state, retain=True)
+                if topic == "chargingPower":
+                    unit = state.attributes.get("unit_of_measurement")
+                    await self.publish_data(
+                        "chargingPower/unit", str(unit) if unit is not None else "", retain=True
+                    )
 
     async def _async_on_ha_state_change(self, event):
         """Send updated state to Arduino over MQTT (retained)."""
@@ -59,6 +64,11 @@ class CarApp(DashboardApp):
         if subtopic:
             # retain=True keeps the message on the MQTT broker.
             await self.publish_data(subtopic, str(new_state.state), retain=True)
+            if subtopic == "chargingPower":
+                unit = new_state.attributes.get("unit_of_measurement")
+                await self.publish_data(
+                    "chargingPower/unit", str(unit) if unit is not None else "", retain=True
+                )
             _LOGGER.debug(
                 "Pushed %s state (%s) to MQTT topic car/%s (retained)",
                 entity_id,
