@@ -68,6 +68,7 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
         }
         for lamp in range(1, 7):
             entity_key = f"lights_lamp_{lamp}_entity"
+            enabled_key = f"lights_lamp_{lamp}_enabled"
             name_key = f"lights_lamp_{lamp}_name"
             lights_schema.update(
                 {
@@ -84,6 +85,10 @@ class CustomOptionsFlowHandler(config_entries.OptionsFlow):
                             multiple=False,
                         )
                     ),
+                    vol.Optional(
+                        enabled_key,
+                        default=opts.get(enabled_key, True),
+                    ): selector.BooleanSelector(),
                     vol.Optional(
                         f"lights_lamp_{lamp}_on_off",
                         default=opts.get(f"lights_lamp_{lamp}_on_off", False),

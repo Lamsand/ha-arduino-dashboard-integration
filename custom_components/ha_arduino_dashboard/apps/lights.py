@@ -27,6 +27,7 @@ class LightsApp(DashboardApp):
             (
                 lamp,
                 options.get(f"lights_lamp_{lamp}_entity"),
+                options.get(f"lights_lamp_{lamp}_enabled", True) is True,
                 options.get(f"lights_lamp_{lamp}_on_off") is True,
                 options.get(f"lights_lamp_{lamp}_name", ""),
             )
@@ -34,17 +35,21 @@ class LightsApp(DashboardApp):
         ]
         self.lights = [
             (lamp, entity_id, on_off_only)
-            for lamp, entity_id, on_off_only, _name in self.lamp_configs
+            for lamp, entity_id, lamp_enabled, on_off_only, _name in self.lamp_configs
+            if lamp_enabled
             if isinstance(entity_id, str) and entity_id
         ]
 
     async def async_setup(self, enabled: bool = True):
         """Publish lamp configuration and subscribe when the app is enabled."""
-        for lamp, entity_id, on_off_only, name in self.lamp_configs:
+        for lamp, entity_id, lamp_enabled, on_off_only, name in self.lamp_configs:
             await self.publish_data(
                 f"lamp{lamp}/enabled",
                 "on"
-                if enabled and isinstance(entity_id, str) and entity_id
+                if enabled
+                and lamp_enabled
+                and isinstance(entity_id, str)
+                and entity_id
                 else "off",
             )
             await self.publish_data(
