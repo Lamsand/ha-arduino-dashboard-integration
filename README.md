@@ -35,9 +35,9 @@ That goal is not reached yet. The integration currently supports only the apps l
 
 ## Installation
 
-### HACS
+### Marketplace
 
-1. Open HACS in Home Assistant.
+1. Open **Marketplace** in Home Assistant.
 2. Add `Lamsand/ha-arduino-dashboard-integration` as a custom repository with category **Integration**.
 3. Install **HA Arduino Dashboard** and restart Home Assistant.
 4. Go to **Settings → Devices & services → Add integration**.
