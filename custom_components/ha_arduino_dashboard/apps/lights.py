@@ -64,6 +64,12 @@ class LightsApp(DashboardApp):
         image = cls._get_lamp_image(options, lamp)
         return "Custom" if image == "Custom (Arduino code defined)" else image
 
+    @staticmethod
+    def _get_custom_image_string(options: dict[str, object], lamp: int) -> str:
+        """Return the custom image string configured for a lamp."""
+        value = options.get(f"lights_lamp_{lamp}_custom_image_string")
+        return value if isinstance(value, str) else ""
+
     async def async_setup(self, enabled: bool = True):
         """Publish lamp configuration and subscribe when the app is enabled."""
         for lamp, entity_id, lamp_enabled, on_off_only, name in self.lamp_configs:
@@ -88,6 +94,12 @@ class LightsApp(DashboardApp):
                 f"lamp{lamp}/image",
                 self._get_lamp_image_payload(self._options, lamp),
             )
+            custom_image_string = self._get_custom_image_string(self._options, lamp)
+            if custom_image_string:
+                await self.publish_data(
+                    f"lamp{lamp}/image/custom",
+                    custom_image_string,
+                )
 
         if not enabled:
             return
@@ -136,7 +148,7 @@ class LightsApp(DashboardApp):
         supported_keys = {
             f"lights_lamp_{lamp}_{suffix}"
             for lamp in range(1, 7)
-            for suffix in ("name", "on_off", "image")
+            for suffix in ("name", "on_off", "image", "custom_image_string")
         }
         if not changed_keys.issubset(supported_keys):
             return False
@@ -177,6 +189,13 @@ class LightsApp(DashboardApp):
                     f"lamp{lamp}/image",
                     self._get_lamp_image_payload(options, lamp),
                 )
+            if f"lights_lamp_{lamp}_custom_image_string" in changed_keys:
+                custom_image_string = self._get_custom_image_string(options, lamp)
+                if custom_image_string:
+                    await self.publish_data(
+                        f"lamp{lamp}/image/custom",
+                        custom_image_string,
+                    )
 
         return True
 

@@ -96,8 +96,11 @@ Each lamp also has an image selector, defaulting to `Globe lamp`, with options
 `Christmas lights`, `Globe lamp`, `Moonlamp`, `Philips Hue`, and
 `Custom (Arduino code defined)`. Selected images are published as retained
 strings to `lights/lampX/image`; the custom option publishes `Custom`.
-Changing a name, on-off setting, or image publishes only that value and does
-not reload the integration.
+Each lamp also has a **Custom image string** text entity. A non-empty value is
+published to `lights/lampX/image/custom`. The Arduino code must implement the
+logic to choose and display this custom image. Changing a name, on-off setting,
+image, or custom image string publishes only that value and does not reload the
+integration.
 
 ## Enabling and disabling apps
 
