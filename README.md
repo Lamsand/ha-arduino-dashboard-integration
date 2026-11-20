@@ -92,6 +92,8 @@ retained configuration states for all six slots: `lights/lampX/enabled` is
 Each lamp name is available as a text entity on the Lights device, so it can be
 changed without reopening the integration options. Names default to `Default`
 until set, and are published as retained strings to `lights/lampX/name`.
+Changing a name or on-off setting publishes only that value and does not reload
+the integration.
 
 ## Enabling and disabling apps
 

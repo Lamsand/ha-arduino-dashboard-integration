@@ -7,8 +7,8 @@ from homeassistant.components.mqtt.models import ReceiveMessage
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.event import async_track_state_change_event
 
-from .base import DashboardApp
 from ..const import DEFAULT_LAMP_NAME
+from .base import DashboardApp
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ class LightsApp(DashboardApp):
             name="Arduino Lights Dashboard",
         )
         self.entry = entry
+        self._options = dict(options)
         self.lamp_configs = [
             (
                 lamp,
@@ -74,7 +75,7 @@ class LightsApp(DashboardApp):
         await super().async_setup()
         _LOGGER.info("Setting up Lights App...")
 
-        for lamp, entity_id, on_off_only in self.lights:
+        for lamp, entity_id, _on_off_only in self.lights:
             topic = f"lights/lamp{lamp}"
             callback = partial(
                 self._async_on_mqtt_message,
@@ -83,16 +84,16 @@ class LightsApp(DashboardApp):
             unsubscribe = await mqtt.async_subscribe(self.hass, topic, callback)
             self.entry.async_on_unload(unsubscribe)
 
-            if not on_off_only:
-                unsubscribe = await mqtt.async_subscribe(
-                    self.hass,
-                    f"{topic}/br",
-                    partial(
-                        self._async_on_brightness_message,
-                        entity_id=entity_id,
-                    ),
-                )
-                self.entry.async_on_unload(unsubscribe)
+            unsubscribe = await mqtt.async_subscribe(
+                self.hass,
+                f"{topic}/br",
+                partial(
+                    self._async_on_brightness_message,
+                    lamp=lamp,
+                    entity_id=entity_id,
+                ),
+            )
+            self.entry.async_on_unload(unsubscribe)
 
         if self.lights:
             unsubscribe = async_track_state_change_event(
@@ -101,6 +102,58 @@ class LightsApp(DashboardApp):
                 self._async_on_light_state_change,
             )
             self.entry.async_on_unload(unsubscribe)
+
+    async def async_apply_option_updates(self, options: dict[str, object]) -> bool:
+        """Apply lamp name and mode changes without reloading the integration."""
+        changed_keys = {
+            key
+            for key in self._options.keys() | options.keys()
+            if self._options.get(key) != options.get(key)
+        }
+        if not changed_keys:
+            return True
+
+        supported_keys = {
+            f"lights_lamp_{lamp}_{suffix}"
+            for lamp in range(1, 7)
+            for suffix in ("name", "on_off")
+        }
+        if not changed_keys.issubset(supported_keys):
+            return False
+
+        self._options = dict(options)
+        self.lamp_configs = [
+            (
+                lamp,
+                entity_id,
+                lamp_enabled,
+                options.get(f"lights_lamp_{lamp}_on_off") is True,
+                self._get_lamp_name(options, lamp),
+            )
+            for lamp, entity_id, lamp_enabled, _, _ in self.lamp_configs
+        ]
+        self.lights = [
+            (lamp, entity_id, on_off_only)
+            for lamp, entity_id, lamp_enabled, on_off_only, _name in self.lamp_configs
+            if lamp_enabled
+            if isinstance(entity_id, str) and entity_id
+        ]
+
+        for lamp in range(1, 7):
+            if f"lights_lamp_{lamp}_name" in changed_keys:
+                await self.publish_data(
+                    f"lamp{lamp}/name",
+                    self._get_lamp_name(options, lamp),
+                )
+            if f"lights_lamp_{lamp}_on_off" in changed_keys:
+                await self.publish_data(
+                    f"lamp{lamp}/on-off",
+                    "on"
+                    if options.get(f"lights_lamp_{lamp}_on_off") is True
+                    else "off",
+                )
+
+        return True
 
     async def _async_on_mqtt_message(
         self,
@@ -116,9 +169,12 @@ class LightsApp(DashboardApp):
         )
 
     async def _async_on_brightness_message(
-        self, message: ReceiveMessage, entity_id: str
+        self, message: ReceiveMessage, lamp: int, entity_id: str
     ) -> None:
         """Set a light's brightness from its MQTT percentage command."""
+        if self.lamp_configs[lamp - 1][3]:
+            return
+
         try:
             brightness_pct = int(message.payload)
         except (TypeError, ValueError):

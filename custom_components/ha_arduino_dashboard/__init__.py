@@ -77,7 +77,14 @@ def _remove_app_device(device_registry: dr.DeviceRegistry, app_id: str) -> None:
 
 
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
-    """Reload the integration when its options change."""
+    """Apply live lamp settings or reload for other option changes."""
+    entry_apps = hass.data.get(DOMAIN, {}).get(entry.entry_id, {})
+    lights_app = entry_apps.get("lights")
+    if lights_app is not None and await lights_app.async_apply_option_updates(
+        dict(entry.options)
+    ):
+        return
+
     await hass.config_entries.async_reload(entry.entry_id)
 
 
