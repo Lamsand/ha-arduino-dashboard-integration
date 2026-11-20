@@ -92,8 +92,12 @@ retained configuration states for all six slots: `lights/lampX/enabled` is
 Each lamp name is available as a text entity on the Lights device, so it can be
 changed without reopening the integration options. Names default to `Default`
 until set, and are published as retained strings to `lights/lampX/name`.
-Changing a name or on-off setting publishes only that value and does not reload
-the integration.
+Each lamp also has an image selector, defaulting to `Globe lamp`, with options
+`Christmas lights`, `Globe lamp`, `Moonlamp`, `Philips Hue`, and
+`Custom (Arduino code defined)`. Selected images are published as retained
+strings to `lights/lampX/image`; the custom option publishes `Custom`.
+Changing a name, on-off setting, or image publishes only that value and does
+not reload the integration.
 
 ## Enabling and disabling apps
 

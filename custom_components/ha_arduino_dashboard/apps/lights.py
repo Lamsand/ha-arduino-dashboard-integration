@@ -7,7 +7,7 @@ from homeassistant.components.mqtt.models import ReceiveMessage
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.event import async_track_state_change_event
 
-from ..const import DEFAULT_LAMP_NAME
+from ..const import DEFAULT_LAMP_IMAGE, DEFAULT_LAMP_NAME, LAMP_IMAGE_OPTIONS
 from .base import DashboardApp
 
 _LOGGER = logging.getLogger(__name__)
@@ -48,6 +48,22 @@ class LightsApp(DashboardApp):
         name = options.get(f"lights_lamp_{lamp}_name")
         return name if isinstance(name, str) and name else DEFAULT_LAMP_NAME
 
+    @staticmethod
+    def _get_lamp_image(options: dict[str, object], lamp: int) -> str:
+        """Return the configured lamp image or its default."""
+        image = options.get(f"lights_lamp_{lamp}_image")
+        return (
+            image
+            if isinstance(image, str) and image in LAMP_IMAGE_OPTIONS
+            else DEFAULT_LAMP_IMAGE
+        )
+
+    @classmethod
+    def _get_lamp_image_payload(cls, options: dict[str, object], lamp: int) -> str:
+        """Return the MQTT value for the selected lamp image."""
+        image = cls._get_lamp_image(options, lamp)
+        return "Custom" if image == "Custom (Arduino code defined)" else image
+
     async def async_setup(self, enabled: bool = True):
         """Publish lamp configuration and subscribe when the app is enabled."""
         for lamp, entity_id, lamp_enabled, on_off_only, name in self.lamp_configs:
@@ -67,6 +83,10 @@ class LightsApp(DashboardApp):
             await self.publish_data(
                 f"lamp{lamp}/name",
                 name,
+            )
+            await self.publish_data(
+                f"lamp{lamp}/image",
+                self._get_lamp_image_payload(self._options, lamp),
             )
 
         if not enabled:
@@ -104,7 +124,7 @@ class LightsApp(DashboardApp):
             self.entry.async_on_unload(unsubscribe)
 
     async def async_apply_option_updates(self, options: dict[str, object]) -> bool:
-        """Apply lamp name and mode changes without reloading the integration."""
+        """Apply lamp setting changes without reloading the integration."""
         changed_keys = {
             key
             for key in self._options.keys() | options.keys()
@@ -116,7 +136,7 @@ class LightsApp(DashboardApp):
         supported_keys = {
             f"lights_lamp_{lamp}_{suffix}"
             for lamp in range(1, 7)
-            for suffix in ("name", "on_off")
+            for suffix in ("name", "on_off", "image")
         }
         if not changed_keys.issubset(supported_keys):
             return False
@@ -151,6 +171,11 @@ class LightsApp(DashboardApp):
                     "on"
                     if options.get(f"lights_lamp_{lamp}_on_off") is True
                     else "off",
+                )
+            if f"lights_lamp_{lamp}_image" in changed_keys:
+                await self.publish_data(
+                    f"lamp{lamp}/image",
+                    self._get_lamp_image_payload(options, lamp),
                 )
 
         return True
