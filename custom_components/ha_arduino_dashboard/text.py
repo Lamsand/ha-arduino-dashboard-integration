@@ -6,7 +6,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DEFAULT_LAMP_NAME, DOMAIN
 
 
 async def async_setup_entry(
@@ -36,8 +36,8 @@ class LampNameText(TextEntity):
     @property
     def native_value(self) -> str:
         """Return the lamp name stored in the integration options."""
-        value = self._entry.options.get(self._option_key, "")
-        return value if isinstance(value, str) else ""
+        value = self._entry.options.get(self._option_key)
+        return value if isinstance(value, str) and value else DEFAULT_LAMP_NAME
 
     @property
     def device_info(self) -> DeviceInfo:

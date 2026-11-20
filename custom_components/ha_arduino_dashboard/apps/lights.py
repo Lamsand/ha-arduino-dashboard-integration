@@ -8,6 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.event import async_track_state_change_event
 
 from .base import DashboardApp
+from ..const import DEFAULT_LAMP_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ class LightsApp(DashboardApp):
                 options.get(f"lights_lamp_{lamp}_entity"),
                 options.get(f"lights_lamp_{lamp}_enabled", True) is True,
                 options.get(f"lights_lamp_{lamp}_on_off") is True,
-                options.get(f"lights_lamp_{lamp}_name", ""),
+                self._get_lamp_name(options, lamp),
             )
             for lamp in range(1, 7)
         ]
@@ -39,6 +40,12 @@ class LightsApp(DashboardApp):
             if lamp_enabled
             if isinstance(entity_id, str) and entity_id
         ]
+
+    @staticmethod
+    def _get_lamp_name(options: dict[str, object], lamp: int) -> str:
+        """Return the configured lamp name or its default."""
+        name = options.get(f"lights_lamp_{lamp}_name")
+        return name if isinstance(name, str) and name else DEFAULT_LAMP_NAME
 
     async def async_setup(self, enabled: bool = True):
         """Publish lamp configuration and subscribe when the app is enabled."""
@@ -58,7 +65,7 @@ class LightsApp(DashboardApp):
             )
             await self.publish_data(
                 f"lamp{lamp}/name",
-                name if isinstance(name, str) else "",
+                name,
             )
 
         if not enabled:

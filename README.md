@@ -88,9 +88,9 @@ Whenever the integration starts or its configuration changes, it publishes
 retained configuration states for all six slots: `lights/lampX/enabled` is
 `on` only when the Lights app is enabled and an entity is selected, and
 `lights/lampX/on-off` reflects that slot's on/off-only setting.
-Configure an optional name for each lamp; it is published as a retained string
-to `lights/lampX/name`. Each name is also available as a text entity on the
-Lights device, so it can be changed without reopening the integration options.
+Each lamp name is available as a text entity on the Lights device, so it can be
+changed without reopening the integration options. Names default to `Default`
+until set, and are published as retained strings to `lights/lampX/name`.
 
 ## Enabling and disabling apps
 
