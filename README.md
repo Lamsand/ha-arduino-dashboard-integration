@@ -82,8 +82,9 @@ Enable the Lights app, then configure up to six light entities. Each light uses
 `lights/lampX` for its switch command and retained state, where `X` is its slot
 number from 1 to 6. Send `Switch` to toggle it. For dimmable lights, send a
 brightness percentage (`0`-`100`) to `lights/lampX/br`; brightness changes are
-published to `lights/lampX`. Mark a light as **on/off only** to disable
-brightness commands and instead publish its `on`/`off` state to `lights/lampX`.
+published to `lights/lampX`. Turn on its **Lamp X on-off** switch entity on the
+Lights device to disable brightness commands and instead publish its `on`/`off`
+state to `lights/lampX`.
 Whenever the integration starts or its configuration changes, it publishes
 retained configuration states for all six slots: `lights/lampX/enabled` is
 `on` only when the Lights app is enabled and an entity is selected, and
